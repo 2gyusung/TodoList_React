@@ -2,11 +2,14 @@
 
 import React from 'react'
 
-function TodoItem({id, context, isDone, createDate , onUpdate}) {
+function TodoItem({id, context, isDone, createDate , onUpdate, onDelete}) {
   const onChangeCheckbox = () => {
     onUpdate(id)
   }
 
+  const onClickDelete = () => {
+    onDelete(id)
+  }
   return (
     <div className='TodoItem'>
       <div className='checkbox_col'>
@@ -15,7 +18,7 @@ function TodoItem({id, context, isDone, createDate , onUpdate}) {
       <div className='title_col'>{context}</div>
       <div className='date_col'>{new Date(createDate).toLocaleDateString()}</div>
       <div className='btn_col'>
-        <button>삭제</button>
+        <button onClick={onClickDelete}>삭제</button>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 // 할 일 데이터 관리
 
-import { useRef, useState } from "react";
+import { useCallback, useReducer, useRef, useState } from "react";
 import "./App.scss";
 import Header from "./components/Header";
 import TodoEditor from "./components/TodoEditor";
@@ -27,44 +27,67 @@ const mokTodo = [
   },
 ];
 
+function reducer(state, action) {
+  switch(action.type) {
+    case 'CREATE' : {
+      return [action.newItem, ...state] //action.newItem  + 줄임 ...state에 더한다
+    }
+    case 'UPDATE' : {
+      return state.map(it => it.id === action.targetId ? {...it, isDone : !it.isDone} : it
+      )
+    }
+    case 'DELETE' : {
+      return state.filter(it=> it.id !== action.targetId)
+      
+    }
+    default :
+    return state;
+  }
+
+}
 function App() {
   const idRef = useRef(3);
-  const [todo, setTodo] = useState(mokTodo);
+  const [todo, dispatch] = useReducer(reducer ,mokTodo);
+
 
   const onCreate = (content) => {
-    const newItem = {
-      id: idRef.current,
-      content: content,
-      isDone: false,
-      createDate: new Date().getTime(),
-    };
-    setTodo([newItem, ...todo]);
+    console.log('클릭');
+    
+    dispatch({
+      type: 'CREATE', // <-- 올바른 타입
+      newItem: {
+        id: idRef.current,
+        context:content, // 'content' 속성 대신 'context'로 일치시켜야 함
+        isDone: false,
+        createDate: new Date().getTime(),
+      },
+    });
     idRef.current += 1;
   };
 
-  const onUpdate = (targetId) => {
-    setTodo(
-      todo.map(
-        (it)=> {
-          if(it.id === targetId) {
-            return {
-              ...it,
-              isDone: !it.isDone,
-            }
-          }
-          else {
-            return it;
-          }
-        }
-      )
-    )
-  }
+  const onUpdate = useCallback((targetId) => {
+    dispatch({
+      type: 'UPDATE',
+      targetId : targetId
+    })
+  },[])
+
+
+  const onDelete = useCallback((targetId) => {
+    dispatch({
+      type: "DELETE",
+      targetId,
+    })
+  },[])
+  console.log(todo);
 
   return (
     <div className="App">
       <Header />
       <TodoEditor onCreate={onCreate} />
-      <TodoList todo={todo} onUpdate={onUpdate} />
+      <TodoList todo={todo}
+       onUpdate={onUpdate}
+        onDelete={onDelete} />
     </div>
   );
 }
