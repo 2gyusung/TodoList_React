@@ -1,9 +1,12 @@
 // 검색에 따라 필터링된 할 일 아이템 렌더링
 
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
+import {TodoStateContext} from '../App'
 import TodoItem from './TodoItem'
 
-function TodoList({todo , onUpdate ,onDelete}) {
+function TodoList() {
+
+  const {todo} =  useContext(TodoStateContext)
   const [search, setSearch] = useState("")
 
   const getSearchResult = () => {
@@ -13,7 +16,7 @@ function TodoList({todo , onUpdate ,onDelete}) {
   const onChangeSearch = (e) => {
     setSearch(e.target.value)
   }
-
+  
   const analyzeTodo = useMemo(() => {
     console.log('analyzeTodo 함수호출');
     const totalCount = todo.length;
@@ -43,12 +46,15 @@ function TodoList({todo , onUpdate ,onDelete}) {
       <div className='list_wrapper'>
       {
         getSearchResult().map((it)=> (
-          <TodoItem {...it} key={it.id} {...it} onUpdate={onUpdate} onDelete={onDelete}/>
+          <TodoItem {...it} key={it.id} {...it}/>
         ))
      }
       </div>
     </div>
   )
 }
+// TodoList.defaultProps = { 18이상 버젼은 안된다
+//   todo : [],
+// }
 
 export default TodoList

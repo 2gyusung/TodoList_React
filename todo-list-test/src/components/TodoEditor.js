@@ -1,7 +1,9 @@
 // 새로운 할 일 생성
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
+import { TodoDispatchContext } from '../App';
 
-function TodoEditor({onCreate} ) {
+const TodoEditor = () => {
+  const {onCreate} = useContext(TodoDispatchContext)
   const [content, setContent] = useState("")
   
   const inputRef = useRef();
@@ -18,7 +20,7 @@ function TodoEditor({onCreate} ) {
     setContent("")
   }
   const onKeyDown = (e) => {
-    if(e.keyCode == 13) {
+    if(e.keyCode === 13) {
       onSubmit()
     }
   }

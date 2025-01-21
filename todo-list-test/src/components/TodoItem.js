@@ -1,8 +1,9 @@
 // 할 일 아이템의 수정 및 삭제
 
-import React from 'react'
-
-function TodoItem({id, context, isDone, createDate , onUpdate, onDelete}) {
+import React, { useContext } from 'react'
+import {TodoDispatchContext} from '../App'
+function TodoItem({id, context, isDone, createDate }) {
+    const {onUpdate, onDelete} =  useContext(TodoDispatchContext)
   const onChangeCheckbox = () => {
     onUpdate(id)
   }

@@ -1,6 +1,6 @@
 // 할 일 데이터 관리
 
-import { useCallback, useReducer, useRef, useState } from "react";
+import React, { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import "./App.scss";
 import Header from "./components/Header";
 import TodoEditor from "./components/TodoEditor";
@@ -45,6 +45,10 @@ function reducer(state, action) {
   }
 
 }
+
+      // 가상의 컴포넌트을 활용해 그룹핑을 설정해준다
+      export const TodoStateContext = React.createContext() //함수
+      export const TodoDispatchContext = React.createContext() //함수
 function App() {
   const idRef = useRef(3);
   const [todo, dispatch] = useReducer(reducer ,mokTodo);
@@ -65,7 +69,7 @@ function App() {
     idRef.current += 1;
   };
 
-  const onUpdate = useCallback((targetId) => {
+  const onUpdate = useCallback((targetId) => {   
     dispatch({
       type: 'UPDATE',
       targetId : targetId
@@ -81,13 +85,20 @@ function App() {
   },[])
   console.log(todo);
 
+  const memoizeDispatch = useMemo(()=> {
+    return {onCreate, onUpdate, onDelete}
+  }, [])
+ 
+
   return (
     <div className="App">
-      <Header />
-      <TodoEditor onCreate={onCreate} />
-      <TodoList todo={todo}
-       onUpdate={onUpdate}
-        onDelete={onDelete} />
+       <Header />
+      <TodoStateContext.Provider value={{todo}}>
+      <TodoDispatchContext.Provider value={memoizeDispatch}>
+      <TodoEditor />
+      <TodoList/>
+      </TodoDispatchContext.Provider>
+      </TodoStateContext.Provider>
     </div>
   );
 }
